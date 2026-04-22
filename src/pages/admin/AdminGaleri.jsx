@@ -280,11 +280,10 @@ export default function AdminGaleri() {
                   <div className="form-group">
                     <label>Bulan & Tahun</label>
                     <input
-                      type="text"
+                      type="date"
                       name="bulan_tahun"
                       value={formData.bulan_tahun}
                       onChange={handleInputChange}
-                      placeholder="April 2025"
                     />
                   </div>
 
