@@ -301,40 +301,86 @@ export default function AdminAgenda() {
           <div className="data-table-card">
             {loading ? (
               <p>Loading...</p>
+            ) : agenda.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#666' }}>
+                <p style={{ fontSize: '1rem', margin: 0 }}>Belum ada data agenda</p>
+              </div>
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>JUDUL KEGIATAN</th>
-                    <th>TANGGAL</th>
-                    <th>WAKTU</th>
-                    <th>LOKASI</th>
-                    <th>RW</th>
-                    <th>AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {agenda.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.judul}</td>
-                      <td>{new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                      <td>{item.waktu || '—'}</td>
-                      <td>{item.lokasi || '—'}</td>
-                      <td>{getRWLabel(item.rw)}</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
-                            ✏️ Edit
-                          </button>
-                          <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
+              <>
+                {/* Desktop Table View */}
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>JUDUL KEGIATAN</th>
+                      <th>TANGGAL</th>
+                      <th>WAKTU</th>
+                      <th>LOKASI</th>
+                      <th>RW</th>
+                      <th>AKSI</th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {agenda.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.judul}</td>
+                        <td>{new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>{item.waktu || '—'}</td>
+                        <td>{item.lokasi || '—'}</td>
+                        <td>{getRWLabel(item.rw)}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
+                              ✏️ Edit
+                            </button>
+                            <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Mobile Card View */}
+                <div className="mobile-data-cards">
+                  {agenda.map(item => (
+                    <div key={item.id} className="mobile-card">
+                      <div className="mobile-card-header">
+                        <div className="mobile-card-title">{item.judul}</div>
+                      </div>
+                      <div className="mobile-card-body">
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">📅 Tanggal</span>
+                          <span className="mobile-card-value">
+                            {new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">🕐 Waktu</span>
+                          <span className="mobile-card-value">{item.waktu || '—'}</span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">📍 Lokasi</span>
+                          <span className="mobile-card-value">{item.lokasi || '—'}</span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">🏘️ RW</span>
+                          <span className="mobile-card-value">{getRWLabel(item.rw)}</span>
+                        </div>
+                      </div>
+                      <div className="mobile-card-actions">
+                        <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
+                          ✏️ Edit
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
+                          🗑️ Hapus
+                        </button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
           </div>
         </div>

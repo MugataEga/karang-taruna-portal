@@ -311,46 +311,90 @@ export default function AdminPengurus() {
             {loading ? (
               <p>Loading...</p>
             ) : pengurus.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
-                Belum ada data pengurus untuk {getUnitLabel(selectedUnit)}
-              </p>
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#666' }}>
+                <p style={{ fontSize: '1rem', margin: 0 }}>
+                  Belum ada data pengurus untuk {getUnitLabel(selectedUnit)}
+                </p>
+              </div>
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>NAMA</th>
-                    <th>JABATAN</th>
-                    <th>WILAYAH</th>
-                    <th>KONTAK</th>
-                    <th>AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <>
+                {/* Desktop Table View */}
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>NAMA</th>
+                      <th>JABATAN</th>
+                      <th>WILAYAH</th>
+                      <th>KONTAK</th>
+                      <th>AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pengurus.map(item => (
+                      <tr key={item.id}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="user-avatar" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                              {generateInitials(item.nama)}
+                            </div>
+                            <span>{item.nama}</span>
+                          </div>
+                        </td>
+                        <td>{item.jabatan}</td>
+                        <td>{getUnitLabel(item.unit)}</td>
+                        <td>{item.kontak || '-'}</td>
+                        <td>
+                          <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
+                            ✏️ Edit
+                          </button>
+                          <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Mobile Card View */}
+                <div className="mobile-data-cards">
                   {pengurus.map(item => (
-                    <tr key={item.id}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <div className="user-avatar" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                    <div key={item.id} className="mobile-card">
+                      <div className="mobile-card-header">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                          <div className="user-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem' }}>
                             {generateInitials(item.nama)}
                           </div>
-                          <span>{item.nama}</span>
+                          <div style={{ flex: 1 }}>
+                            <div className="mobile-card-title">{item.nama}</div>
+                            <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '2px' }}>
+                              {item.jabatan}
+                            </div>
+                          </div>
                         </div>
-                      </td>
-                      <td>{item.jabatan}</td>
-                      <td>{getUnitLabel(item.unit)}</td>
-                      <td>{item.kontak || '-'}</td>
-                      <td>
+                      </div>
+                      <div className="mobile-card-body">
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">🏘️ Wilayah</span>
+                          <span className="mobile-card-value">{getUnitLabel(item.unit)}</span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">📞 Kontak</span>
+                          <span className="mobile-card-value">{item.kontak || '-'}</span>
+                        </div>
+                      </div>
+                      <div className="mobile-card-actions">
                         <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
                           ✏️ Edit
                         </button>
                         <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
-                          🗑️
+                          🗑️ Hapus
                         </button>
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
           </div>
         </div>

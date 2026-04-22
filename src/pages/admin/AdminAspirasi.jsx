@@ -114,84 +114,173 @@ export default function AdminAspirasi() {
                 <p style={{ fontSize: '1rem', margin: 0 }}>Belum ada data aspirasi</p>
               </div>
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>TANGGAL</th>
-                    <th>NAMA</th>
-                    <th>RW</th>
-                    <th>KATEGORI</th>
-                    <th>ISI ASPIRASI</th>
-                    <th>STATUS</th>
-                    <th>AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {aspirasi.map(item => (
-                    <tr key={item.id}>
-                      <td>{new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                      <td>
-                        <div style={{ fontWeight: 600 }}>{item.nama}</div>
-                        {item.no_hp && <div style={{ fontSize: '0.85rem', color: '#666' }}>{item.no_hp}</div>}
-                      </td>
-                      <td>{item.rw.toUpperCase().replace('RW', 'RW ')}</td>
-                      <td>{item.kategori}</td>
-                      <td style={{ maxWidth: '300px' }}>
-                        <div style={{ 
-                          maxHeight: '60px', 
-                          overflow: 'auto', 
-                          fontSize: '0.9rem',
-                          lineHeight: '1.4'
-                        }}>
-                          {item.isi}
-                        </div>
-                      </td>
-                      <td>{getStatusBadge(item.status)}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {item.status !== 'diproses' && (
-                            <button 
-                              onClick={() => handleUpdateStatus(item.id, 'diproses')}
-                              className="btn-icon"
-                              style={{ 
-                                fontSize: '11px', 
-                                padding: '4px 10px',
-                                background: '#ff9800',
-                                color: 'white',
-                                border: 'none'
-                              }}
-                            >
-                              Proses
-                            </button>
-                          )}
-                          {item.status !== 'selesai' && (
-                            <button 
-                              onClick={() => handleUpdateStatus(item.id, 'selesai')}
-                              className="btn-icon"
-                              style={{ 
-                                fontSize: '11px', 
-                                padding: '4px 10px',
-                                background: '#4caf50',
-                                color: 'white',
-                                border: 'none'
-                              }}
-                            >
-                              Selesai
-                            </button>
-                          )}
-                          <button 
-                            onClick={() => handleDelete(item.id)} 
-                            className="btn-icon btn-delete"
-                            style={{ fontSize: '11px', padding: '4px 10px' }}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
+              <>
+                {/* Desktop Table View */}
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>TANGGAL</th>
+                      <th>NAMA</th>
+                      <th>RW</th>
+                      <th>KATEGORI</th>
+                      <th>ISI ASPIRASI</th>
+                      <th>STATUS</th>
+                      <th>AKSI</th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {aspirasi.map(item => (
+                      <tr key={item.id}>
+                        <td>{new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>
+                          <div style={{ fontWeight: 600 }}>{item.nama}</div>
+                          {item.no_hp && <div style={{ fontSize: '0.85rem', color: '#666' }}>{item.no_hp}</div>}
+                        </td>
+                        <td>{item.rw.toUpperCase().replace('RW', 'RW ')}</td>
+                        <td>{item.kategori}</td>
+                        <td style={{ maxWidth: '300px' }}>
+                          <div style={{ 
+                            maxHeight: '60px', 
+                            overflow: 'auto', 
+                            fontSize: '0.9rem',
+                            lineHeight: '1.4'
+                          }}>
+                            {item.isi}
+                          </div>
+                        </td>
+                        <td>{getStatusBadge(item.status)}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {item.status !== 'diproses' && (
+                              <button 
+                                onClick={() => handleUpdateStatus(item.id, 'diproses')}
+                                className="btn-icon"
+                                style={{ 
+                                  fontSize: '11px', 
+                                  padding: '4px 10px',
+                                  background: '#ff9800',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                Proses
+                              </button>
+                            )}
+                            {item.status !== 'selesai' && (
+                              <button 
+                                onClick={() => handleUpdateStatus(item.id, 'selesai')}
+                                className="btn-icon"
+                                style={{ 
+                                  fontSize: '11px', 
+                                  padding: '4px 10px',
+                                  background: '#4caf50',
+                                  color: 'white',
+                                  border: 'none'
+                                }}
+                              >
+                                Selesai
+                              </button>
+                            )}
+                            <button 
+                              onClick={() => handleDelete(item.id)} 
+                              className="btn-icon btn-delete"
+                              style={{ fontSize: '11px', padding: '4px 10px' }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Mobile Card View */}
+                <div className="mobile-data-cards">
+                  {aspirasi.map(item => (
+                    <div key={item.id} className="mobile-card">
+                      <div className="mobile-card-header">
+                        <div style={{ flex: 1 }}>
+                          <div className="mobile-card-title">{item.nama}</div>
+                          {item.no_hp && (
+                            <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '2px' }}>
+                              📞 {item.no_hp}
+                            </div>
+                          )}
+                        </div>
+                        {getStatusBadge(item.status)}
+                      </div>
+                      <div className="mobile-card-body">
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">📅 Tanggal</span>
+                          <span className="mobile-card-value">
+                            {new Date(item.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">🏘️ RW</span>
+                          <span className="mobile-card-value">{item.rw.toUpperCase().replace('RW', 'RW ')}</span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">📋 Kategori</span>
+                          <span className="mobile-card-value">{item.kategori}</span>
+                        </div>
+                        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
+                          <div className="mobile-card-label" style={{ marginBottom: '0.5rem' }}>💬 Isi Aspirasi</div>
+                          <div style={{ 
+                            fontSize: '0.85rem', 
+                            color: '#333', 
+                            lineHeight: '1.5',
+                            maxHeight: '80px',
+                            overflow: 'auto'
+                          }}>
+                            {item.isi}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mobile-card-actions">
+                        {item.status !== 'diproses' && (
+                          <button 
+                            onClick={() => handleUpdateStatus(item.id, 'diproses')}
+                            className="btn-icon"
+                            style={{ 
+                              flex: 1,
+                              background: '#ff9800',
+                              color: 'white',
+                              border: 'none',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            ⏳ Proses
+                          </button>
+                        )}
+                        {item.status !== 'selesai' && (
+                          <button 
+                            onClick={() => handleUpdateStatus(item.id, 'selesai')}
+                            className="btn-icon"
+                            style={{ 
+                              flex: 1,
+                              background: '#4caf50',
+                              color: 'white',
+                              border: 'none',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            ✅ Selesai
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => handleDelete(item.id)} 
+                          className="btn-icon btn-delete"
+                          style={{ flex: 1, justifyContent: 'center' }}
+                        >
+                          🗑️ Hapus
+                        </button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
           </div>
         </div>

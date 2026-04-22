@@ -272,6 +272,19 @@ export default function AdminGaleri() {
           <div className="galeri-grid">
             {loading ? (
               <p>Loading...</p>
+            ) : galeri.length === 0 ? (
+              <div style={{ 
+                gridColumn: '1 / -1',
+                textAlign: 'center', 
+                padding: '3rem 1rem', 
+                color: '#666',
+                background: 'white',
+                borderRadius: '12px',
+                border: '1px solid var(--border)'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🖼️</div>
+                <p style={{ fontSize: '1rem', margin: 0 }}>Belum ada data galeri</p>
+              </div>
             ) : (
               galeri.map(item => (
                 <div key={item.id} className="galeri-card">
@@ -289,7 +302,7 @@ export default function AdminGaleri() {
                         ✏️ Edit
                       </button>
                       <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
-                        🗑️
+                        🗑️ Hapus
                       </button>
                     </div>
                   </div>
