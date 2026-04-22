@@ -284,40 +284,81 @@ export default function AdminPengumuman() {
           <div className="data-table-card">
             {loading ? (
               <p>Loading...</p>
+            ) : pengumuman.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#666' }}>
+                <p style={{ fontSize: '1rem', margin: 0 }}>Belum ada data pengumuman</p>
+              </div>
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>JUDUL</th>
-                    <th>KATEGORI</th>
-                    <th>RW</th>
-                    <th>TANGGAL</th>
-                    <th>AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <>
+                {/* Desktop Table View */}
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>JUDUL</th>
+                      <th>KATEGORI</th>
+                      <th>RW</th>
+                      <th>TANGGAL</th>
+                      <th>AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pengumuman.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.judul}</td>
+                        <td>
+                          <span className={`badge badge-${item.tag_color}`}>
+                            {item.kategori.toUpperCase()}
+                          </span>
+                        </td>
+                        <td>{getRWLabel(item.rw)}</td>
+                        <td>{new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>
+                          <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
+                            ✏️ Edit
+                          </button>
+                          <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Mobile Card View */}
+                <div className="mobile-data-cards">
                   {pengumuman.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.judul}</td>
-                      <td>
+                    <div key={item.id} className="mobile-card">
+                      <div className="mobile-card-header">
+                        <div className="mobile-card-title">{item.judul}</div>
                         <span className={`badge badge-${item.tag_color}`}>
                           {item.kategori.toUpperCase()}
                         </span>
-                      </td>
-                      <td>{getRWLabel(item.rw)}</td>
-                      <td>{new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                      <td>
+                      </div>
+                      <div className="mobile-card-body">
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">RW</span>
+                          <span className="mobile-card-value">{getRWLabel(item.rw)}</span>
+                        </div>
+                        <div className="mobile-card-row">
+                          <span className="mobile-card-label">Tanggal</span>
+                          <span className="mobile-card-value">
+                            {new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mobile-card-actions">
                         <button onClick={() => handleEdit(item)} className="btn-icon btn-edit">
                           ✏️ Edit
                         </button>
                         <button onClick={() => handleDelete(item.id)} className="btn-icon btn-delete">
-                          🗑️
+                          🗑️ Hapus
                         </button>
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
           </div>
         </div>
