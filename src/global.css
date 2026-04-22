@@ -79,18 +79,56 @@
   .nav-aspirasi:hover { background: var(--gold-light); }
 
   .hamburger {
-    display: none; flex-direction: column; gap: 5px; cursor: pointer;
-    background: none; border: none; padding: 4px;
+    display: none; 
+    flex-direction: column; 
+    gap: 5px; 
+    cursor: pointer;
+    background: none; 
+    border: none; 
+    padding: 8px;
+    z-index: 101;
   }
-  .hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: .3s; }
+  .hamburger span { 
+    display: block; 
+    width: 22px; 
+    height: 2px; 
+    background: #fff; 
+    border-radius: 2px; 
+    transition: all 0.3s ease;
+  }
+  .hamburger.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
 
   .mobile-menu {
-    display: none; background: var(--green-deep);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--green-deep);
     border-top: 1px solid rgba(255,255,255,.1);
     padding: 12px 24px 16px;
   }
-  .mobile-menu.open { display: flex; flex-direction: column; gap: 4px; }
-  .mobile-menu .nav-link { text-align: left; padding: 10px 12px; border-radius: 8px; }
+  .mobile-menu .nav-link { 
+    text-align: left; 
+    padding: 10px 12px; 
+    border-radius: 8px;
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .mobile-menu .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .mobile-menu .nav-link.active {
+    background: rgba(212,146,10,0.2);
+    color: var(--gold-light);
+  }
 
   /* ─── RW SELECTOR BAR ─── */
   .rw-bar {
@@ -1422,6 +1460,11 @@
   @media (max-width: 640px) {
     nav { display: none; }
     .hamburger { display: flex; }
+    
+    .logo-text .l2 {
+      font-size: 9px;
+    }
+    
     .grid-3 { grid-template-columns: 1fr; }
     .grid-2 { grid-template-columns: 1fr; }
     .galeri-grid-page { grid-template-columns: 1fr; }
