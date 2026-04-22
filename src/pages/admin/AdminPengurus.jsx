@@ -113,7 +113,9 @@ export default function AdminPengurus() {
     try {
       const dataToSave = {
         ...formData,
-        unit: selectedUnit
+        unit: selectedUnit,
+        // Generate inisial from first letter of nama
+        inisial: formData.nama.charAt(0).toUpperCase()
       }
 
       if (editingId) {

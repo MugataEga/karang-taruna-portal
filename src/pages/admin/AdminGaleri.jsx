@@ -76,7 +76,7 @@ export default function AdminGaleri() {
       // Generate unique filename
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      const filePath = fileName
+      const filePath = `galeri/${fileName}`
 
       // Upload to Supabase Storage bucket 'galeri'
       const { data, error } = await supabase.storage
@@ -280,11 +280,10 @@ export default function AdminGaleri() {
                   <div className="form-group">
                     <label>Bulan & Tahun</label>
                     <input
-                      type="text"
+                      type="date"
                       name="bulan_tahun"
                       value={formData.bulan_tahun}
                       onChange={handleInputChange}
-                      placeholder="April 2025"
                     />
                   </div>
 

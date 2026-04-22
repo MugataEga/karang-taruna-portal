@@ -122,18 +122,22 @@ ADD COLUMN IF NOT EXISTS foto_url TEXT;
 ### 6. Struktur File di Storage
 
 ```
-galeri/ (bucket)
+galeri/ (bucket_id)
 ├── galeri/
 │   ├── 1234567890-abc123.jpg
 │   ├── 1234567891-def456.png
 │   └── ...
-├── pengurus/
-│   ├── 1234567892-ghi789.jpg
-│   ├── 1234567893-jkl012.png
-│   └── ...
+└── pengurus/
+    ├── 1234567892-ghi789.jpg
+    ├── 1234567893-jkl012.png
+    └── ...
 ```
 
-**Note**: Semua foto disimpan dalam satu bucket `galeri`, dengan subfolder berbeda untuk galeri dan pengurus
+**Note**: 
+- Bucket ID: `galeri`
+- Subfolder untuk foto galeri: `galeri/`
+- Subfolder untuk foto pengurus: `pengurus/`
+- Semua foto disimpan dalam satu bucket dengan subfolder berbeda
 
 ### 7. Troubleshooting
 
