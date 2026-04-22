@@ -53,8 +53,9 @@ Website Karang Taruna adalah platform digital yang dirancang untuk memfasilitasi
 - **Vite HMR** - Hot Module Replacement untuk development
 - **Git** - Version control
 
-### Deployment Ready
-- **Vercel** - Recommended untuk deployment
+### Deployment
+- **Cloudflare Pages** - Fast global CDN deployment (Recommended)
+- **Vercel** - Alternative deployment platform
 - **Netlify** - Alternative deployment platform
 
 ### Key Libraries
@@ -103,13 +104,22 @@ npm install
 ```
 
 3. Setup environment variables
-Buat file `.env.local` dan isi dengan:
+
+Buat file `.env.local` di root project dan isi dengan:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 ```
 
+**Cara mendapatkan credentials:**
+1. Login ke [Supabase Dashboard](https://supabase.com/dashboard)
+2. Pilih project Anda
+3. Klik **Settings** → **API**
+4. Copy **Project URL** untuk `VITE_SUPABASE_URL`
+5. Copy **anon/public key** untuk `VITE_SUPABASE_PUBLISHABLE_KEY`
+
 4. Setup database
+
 Jalankan SQL schema dari file `schema.sql` di Supabase SQL Editor
 
 5. Jalankan development server
@@ -119,12 +129,64 @@ npm run dev
 
 6. Buka browser di `http://localhost:5173`
 
+## 🚀 Deployment
+
+### Deploy ke Cloudflare Pages (Recommended)
+
+1. **Connect Repository**
+   - Login ke [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - Pilih **Workers & Pages** → **Create application** → **Pages**
+   - Connect ke Git repository Anda (GitHub/GitLab)
+
+2. **Build Settings**
+   ```
+   Build command: npm run build
+   Build output directory: dist
+   Root directory: / (kosongkan)
+   Node version: 18 atau 20
+   ```
+
+3. **Environment Variables**
+   - Klik **Settings** → **Environment Variables**
+   - Tambahkan untuk **Production** dan **Preview**:
+   ```
+   VITE_SUPABASE_URL = your_supabase_url
+   VITE_SUPABASE_PUBLISHABLE_KEY = your_supabase_publishable_key
+   ```
+
+4. **Deploy**
+   - Klik **Save and Deploy**
+   - Website akan tersedia di `https://[project-name].pages.dev`
+
+5. **Custom Domain (Opsional)**
+   - Klik **Custom domains** → **Set up a custom domain**
+   - Tambahkan domain Anda dan ikuti instruksi DNS
+
+### Deploy ke Vercel
+
+1. Install Vercel CLI atau connect via dashboard
+2. Tambahkan environment variables di **Settings** → **Environment Variables**
+3. Deploy dengan `vercel --prod`
+
+### Deploy ke Netlify
+
+1. Connect repository di Netlify dashboard
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. Tambahkan environment variables di **Site settings** → **Environment variables**
+
 ## 🔐 Admin Access
 
 Untuk mengakses admin panel:
 1. Buka `/admin/login`
 2. Login dengan kredensial admin yang sudah dibuat di Supabase Auth
 3. Setelah login, akses dashboard di `/admin`
+
+**Membuat Admin User:**
+1. Buka Supabase Dashboard → Authentication → Users
+2. Klik **Add user** → **Create new user**
+3. Masukkan email dan password
+4. User dapat login di `/admin/login`
 
 ## 📁 Struktur Folder
 
@@ -163,14 +225,61 @@ src/
 ## 🎨 Design System
 
 Website menggunakan custom design system dengan:
-- **Color Palette**: 
-  - Green Deep: `#0f3d23` (Primary)
-  - Green Mid: `#1a5c38`
-  - Gold: `#d4920a` (Accent)
-  - Gold Light: `#f5b942`
-- **Typography**: System fonts dengan Fraunces untuk logo
-- **Components**: Reusable components dengan consistent styling
-- **Layout**: Sidebar navigation untuk admin, responsive design
+
+### Color Palette
+- **Green Deep**: `#0f3d23` (Primary)
+- **Green Mid**: `#1a5c38`
+- **Gold**: `#d4920a` (Accent)
+- **Gold Light**: `#f5b942`
+- **Cream**: `#fef9f3`
+- **Border**: `#e0e0e0`
+
+### Typography
+- **Logo**: Fraunces (Serif)
+- **Body**: System fonts stack
+- **Headings**: Inter/System fonts
+
+### Components
+- Reusable components dengan consistent styling
+- Sidebar navigation untuk admin
+- Responsive design (Desktop, Tablet, Mobile)
+- Data tables dengan sorting dan filtering
+- Form components dengan validation
+
+## 🌐 Rekomendasi Nama Domain
+
+### Opsi Premium (Domain Berbayar)
+- `karangtaruna.id` - Paling ideal dan profesional
+- `karangtaruna.or.id` - Untuk organisasi non-profit
+- `karangtaruna[namakelurahan].id` - Contoh: karangtarunacipete.id
+
+### Opsi Gratis (Subdomain)
+- `karangtaruna-[namakelurahan].pages.dev` (Cloudflare)
+- `karangtaruna-[namakelurahan].vercel.app` (Vercel)
+- `[namakelurahan]-karangtaruna.netlify.app` (Netlify)
+
+## 🐛 Troubleshooting
+
+### Error: Missing Supabase environment variables
+- Pastikan file `.env.local` ada di root project
+- Restart development server setelah menambah/mengubah `.env.local`
+- Untuk deployment, tambahkan environment variables di dashboard platform
+
+### Build Error
+```bash
+# Hapus node_modules dan install ulang
+rm -rf node_modules package-lock.json
+npm install
+
+# Hapus dist dan build ulang
+rm -rf dist
+npm run build
+```
+
+### Supabase Connection Error
+- Periksa URL dan Key di `.env.local`
+- Pastikan Supabase project aktif
+- Cek Row Level Security (RLS) policies di Supabase
 
 ## 📝 Lisensi
 
@@ -178,15 +287,15 @@ Proyek ini dibuat untuk keperluan Karang Taruna.
 
 ## 👥 Kontributor
 
-- Developer: [Mukgot Ega Sahputra]
-- Design: [Mukgot Ega Sahputr]
+- **Developer**: Mukgot Ega Sahputra
+- **Design**: Mukgot Ega Sahputra
 
 ## 📞 Kontak
 
 Untuk pertanyaan atau dukungan, hubungi:
-- Email: mukgotegasahputra@gmail.com
-- Instagfram: @ageee01_11
+- **Email**: mukgotegasahputra@gmail.com
+- **Instagram**: [@ageee01_11](https://instagram.com/ageee01_11)
 
 ---
 
-Dibuat dengan ❤️ untuk Karang Taruna
+**Dibuat dengan ❤️ untuk Karang Taruna**
