@@ -32,7 +32,7 @@ Website Karang Taruna adalah platform digital yang dirancang untuk memfasilitasi
 - **Kelola Aspirasi**: Monitoring dan update status aspirasi warga
 - **Autentikasi**: Login/logout dengan Supabase Auth
 
-## 🛠️ Tech Stack
+## 🛠️ Teknologi yang Digunakan
 
 ### Frontend
 - **React 18** - Library JavaScript untuk membangun user interface
