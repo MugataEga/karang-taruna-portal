@@ -243,7 +243,10 @@ create table pengurus (
   -- 'kelurahan' | 'rw001' | 'rw002' | 'rw003' | 'rw004' | 'rw005' | 'rw006'
   unit        text        not null,
 
-  inisial     char(1)     not null,     -- huruf pertama nama untuk avatar
+  kontak      text,                     -- nomor HP/WA (opsional)
+  foto_url    text,                     -- URL foto profil dari Storage (opsional)
+
+  inisial     char(1),                  -- huruf pertama nama untuk avatar (auto-generated)
   asal_rw     text,                     -- khusus pengurus tingkat kelurahan
   avatar_color text       default '',   -- opsional: override warna avatar
 

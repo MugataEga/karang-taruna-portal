@@ -30,17 +30,44 @@ const AVATAR_COLORS = [
 
 // ── Sub-components ──────────────────────────────────────────
 
-function PengurusCard({ nama, jabatan, inisial, asal_rw, index }) {
+function PengurusCard({ nama, jabatan, inisial, asal_rw, foto_url, kontak, index }) {
   const bgColor = AVATAR_COLORS[index % AVATAR_COLORS.length]
+  
+  // Generate initials from nama if inisial is not available
+  const displayInitial = inisial || nama.charAt(0).toUpperCase()
   
   return (
     <div className="pengurus-card-profil">
-      <div className="pengurus-avatar-profil" style={{ background: bgColor }}>
-        {inisial}
-      </div>
+      {foto_url ? (
+        <img 
+          src={foto_url} 
+          alt={nama}
+          className="pengurus-avatar-profil"
+          style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            border: '3px solid var(--border)'
+          }}
+        />
+      ) : (
+        <div className="pengurus-avatar-profil" style={{ background: bgColor }}>
+          {displayInitial}
+        </div>
+      )}
       <h4 className="pengurus-nama">{nama}</h4>
       {asal_rw && <p className="pengurus-rw">{asal_rw}</p>}
       <span className="pengurus-jabatan-badge">{jabatan}</span>
+      {kontak && (
+        <p className="pengurus-kontak" style={{ 
+          fontSize: '0.85rem', 
+          color: 'var(--text-light)', 
+          marginTop: '0.5rem' 
+        }}>
+          {kontak}
+        </p>
+      )}
     </div>
   )
 }

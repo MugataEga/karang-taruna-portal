@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import '../../admin.css'
@@ -8,12 +8,33 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn, user } = useAuth()
+  const { signIn, user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/admin', { replace: true })
+    }
+  }, [user, navigate])
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <main className="page-login">
+        <div className="container">
+          <div className="login-box">
+            <div style={{ textAlign: 'center', padding: '2rem' }}>
+              <p>Loading...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // Don't render form if already logged in
   if (user) {
-    navigate('/admin')
     return null
   }
 
