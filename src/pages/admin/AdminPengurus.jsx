@@ -9,6 +9,7 @@ export default function AdminPengurus() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState('kelurahan')
+  const [uploading, setUploading] = useState(false)
   
   // Form state
   const [formData, setFormData] = useState({
@@ -58,6 +59,52 @@ export default function AdminPengurus() {
       .join('')
       .toUpperCase()
       .slice(0, 2)
+  }
+
+  async function handleFileUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('File harus berupa gambar (JPG, PNG, dll)')
+      return
+    }
+
+    // Validate file size (max 2MB for profile photos)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Ukuran file maksimal 2MB')
+      return
+    }
+
+    setUploading(true)
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+      const filePath = `pengurus/${fileName}`
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('galeri')
+        .upload(filePath, file)
+
+      if (error) throw error
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('galeri')
+        .getPublicUrl(filePath)
+
+      // Update form data with URL
+      setFormData(prev => ({ ...prev, foto_url: publicUrl }))
+      alert('Foto berhasil diupload!')
+    } catch (error) {
+      console.error('Error uploading:', error)
+      alert('Gagal upload foto: ' + error.message)
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function handleSubmit(e) {
@@ -233,6 +280,65 @@ export default function AdminPengurus() {
               <h3>{editingId ? 'Edit Pengurus' : 'Tambah Pengurus Baru'}</h3>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
+                  <label>Upload Foto (Opsional)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    style={{ 
+                      padding: '0.5rem',
+                      border: '2px dashed var(--border)',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <small style={{ color: '#666', fontSize: '0.85rem', display: 'block', marginTop: '0.5rem' }}>
+                    Max 2MB. Jika tidak diupload, akan menggunakan inisial nama.
+                  </small>
+                  {uploading && (
+                    <small style={{ color: '#ff9800', display: 'block', marginTop: '0.5rem' }}>
+                      ⏳ Uploading foto...
+                    </small>
+                  )}
+                  {formData.foto_url && (
+                    <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <img 
+                        src={formData.foto_url} 
+                        alt="Preview" 
+                        style={{ 
+                          width: '80px', 
+                          height: '80px', 
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          border: '2px solid var(--border)'
+                        }} 
+                      />
+                      <div>
+                        <div style={{ fontSize: '0.85rem', color: '#4caf50', fontWeight: 600 }}>
+                          ✅ Foto berhasil diupload
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, foto_url: '' }))}
+                          style={{
+                            fontSize: '0.8rem',
+                            color: '#dc2626',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            marginTop: '0.25rem',
+                            textDecoration: 'underline'
+                          }}
+                        >
+                          Hapus foto
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group">
                   <label>Nama Lengkap *</label>
                   <input
                     type="text"
@@ -284,19 +390,8 @@ export default function AdminPengurus() {
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label>URL Foto (Opsional)</label>
-                  <input
-                    type="url"
-                    name="foto_url"
-                    value={formData.foto_url}
-                    onChange={handleInputChange}
-                    placeholder="https://example.com/foto.jpg"
-                  />
-                </div>
-
                 <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary" disabled={uploading}>
                     {editingId ? 'Update' : 'Simpan'}
                   </button>
                   <button type="button" onClick={resetForm} className="btn btn-secondary">
@@ -334,9 +429,23 @@ export default function AdminPengurus() {
                       <tr key={item.id}>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div className="user-avatar" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
-                              {generateInitials(item.nama)}
-                            </div>
+                            {item.foto_url ? (
+                              <img 
+                                src={item.foto_url} 
+                                alt={item.nama}
+                                style={{
+                                  width: '36px',
+                                  height: '36px',
+                                  borderRadius: '50%',
+                                  objectFit: 'cover',
+                                  border: '2px solid var(--border)'
+                                }}
+                              />
+                            ) : (
+                              <div className="user-avatar" style={{ width: '36px', height: '36px', fontSize: '0.9rem' }}>
+                                {generateInitials(item.nama)}
+                              </div>
+                            )}
                             <span>{item.nama}</span>
                           </div>
                         </td>
@@ -362,9 +471,23 @@ export default function AdminPengurus() {
                     <div key={item.id} className="mobile-card">
                       <div className="mobile-card-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                          <div className="user-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem' }}>
-                            {generateInitials(item.nama)}
-                          </div>
+                          {item.foto_url ? (
+                            <img 
+                              src={item.foto_url} 
+                              alt={item.nama}
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50%',
+                                objectFit: 'cover',
+                                border: '2px solid var(--border)'
+                              }}
+                            />
+                          ) : (
+                            <div className="user-avatar" style={{ width: '40px', height: '40px', fontSize: '1rem' }}>
+                              {generateInitials(item.nama)}
+                            </div>
+                          )}
                           <div style={{ flex: 1 }}>
                             <div className="mobile-card-title">{item.nama}</div>
                             <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '2px' }}>
