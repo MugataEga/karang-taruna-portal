@@ -8,13 +8,14 @@ export default function AdminGaleri() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
+  const [uploading, setUploading] = useState(false)
   
   const [formData, setFormData] = useState({
     judul: '',
     deskripsi: '',
     rw: ['all'],
     bulan_tahun: '',
-    bg_gradient: 'linear-gradient(135deg,#c8e6c9,#a5d6a7)',
+    foto_url: '',
     icon_emoji: '🖼',
     urutan: 0
   })
@@ -54,6 +55,52 @@ export default function AdminGaleri() {
     setFormData(prev => ({ ...prev, rw: options }))
   }
 
+  async function handleFileUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('File harus berupa gambar (JPG, PNG, dll)')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal 5MB')
+      return
+    }
+
+    setUploading(true)
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+      const filePath = fileName
+
+      // Upload to Supabase Storage bucket 'galeri'
+      const { data, error } = await supabase.storage
+        .from('galeri')
+        .upload(filePath, file)
+
+      if (error) throw error
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('galeri')
+        .getPublicUrl(filePath)
+
+      // Update form data with URL
+      setFormData(prev => ({ ...prev, foto_url: publicUrl }))
+      alert('Foto berhasil diupload!')
+    } catch (error) {
+      console.error('Error uploading:', error)
+      alert('Gagal upload foto: ' + error.message)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     
@@ -89,7 +136,7 @@ export default function AdminGaleri() {
       deskripsi: item.deskripsi || '',
       rw: item.rw,
       bulan_tahun: item.bulan_tahun || '',
-      bg_gradient: item.bg_gradient,
+      foto_url: item.foto_url || '',
       icon_emoji: item.icon_emoji,
       urutan: item.urutan
     })
@@ -121,7 +168,7 @@ export default function AdminGaleri() {
       deskripsi: '',
       rw: ['all'],
       bulan_tahun: '',
-      bg_gradient: 'linear-gradient(135deg,#c8e6c9,#a5d6a7)',
+      foto_url: '',
       icon_emoji: '🖼',
       urutan: 0
     })
@@ -169,6 +216,44 @@ export default function AdminGaleri() {
               <h3>{editingId ? 'Edit Galeri' : 'Tambah Galeri Baru'}</h3>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
+                  <label>Upload Foto *</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    style={{ 
+                      padding: '0.5rem',
+                      border: '2px dashed var(--border)',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  {uploading && (
+                    <small style={{ color: '#ff9800', display: 'block', marginTop: '0.5rem' }}>
+                      ⏳ Uploading foto...
+                    </small>
+                  )}
+                  {formData.foto_url && (
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <img 
+                        src={formData.foto_url} 
+                        alt="Preview" 
+                        style={{ 
+                          maxWidth: '200px', 
+                          maxHeight: '200px', 
+                          borderRadius: '8px',
+                          border: '1px solid var(--border)'
+                        }} 
+                      />
+                      <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
+                        ✅ Foto berhasil diupload
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-group">
                   <label>Judul *</label>
                   <input
                     type="text"
@@ -215,28 +300,15 @@ export default function AdminGaleri() {
                   </div>
                 </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Icon Emoji</label>
-                    <input
-                      type="text"
-                      name="icon_emoji"
-                      value={formData.icon_emoji}
-                      onChange={handleInputChange}
-                      placeholder="🖼"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Background Gradient</label>
-                    <input
-                      type="text"
-                      name="bg_gradient"
-                      value={formData.bg_gradient}
-                      onChange={handleInputChange}
-                      placeholder="linear-gradient(135deg,#c8e6c9,#a5d6a7)"
-                    />
-                  </div>
+                <div className="form-group">
+                  <label>Icon Emoji</label>
+                  <input
+                    type="text"
+                    name="icon_emoji"
+                    value={formData.icon_emoji}
+                    onChange={handleInputChange}
+                    placeholder="🖼"
+                  />
                 </div>
 
                 <div className="form-group">
@@ -258,7 +330,7 @@ export default function AdminGaleri() {
                 </div>
 
                 <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn btn-primary" disabled={uploading || !formData.foto_url}>
                     {editingId ? 'Update' : 'Simpan'}
                   </button>
                   <button type="button" onClick={resetForm} className="btn btn-secondary">
@@ -290,9 +362,16 @@ export default function AdminGaleri() {
                 <div key={item.id} className="galeri-card">
                   <div 
                     className="galeri-image"
-                    style={{ background: item.bg_gradient }}
+                    style={{ 
+                      background: item.foto_url 
+                        ? `url(${item.foto_url}) center/cover no-repeat` 
+                        : 'linear-gradient(135deg,#c8e6c9,#a5d6a7)',
+                      position: 'relative'
+                    }}
                   >
-                    <span className="galeri-icon">{item.icon_emoji}</span>
+                    {!item.foto_url && (
+                      <span className="galeri-icon">{item.icon_emoji}</span>
+                    )}
                   </div>
                   <div className="galeri-info">
                     <h4>{item.judul}</h4>
